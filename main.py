@@ -29,11 +29,34 @@ class Character:
 class Warrior(Character):
     def __init__(self, name):
         super().__init__(name, health=140, attack_power=25)
+        
+    def berserk(self):
+        self.attack_power *= 1.5  # Increase attack power by 50%
+        print(f"{self.name} goes berserk! Attack power increased to {self.attack_power}!")
+        
+    def overclock(self, opponent):
+        self.health = 1  # Set health to 1
+        damage = round(self.attack_power * random.uniform(0.8, 1.2) * self.max_health / 25)  # Randomize attack damage +- 20% and scale it with max health
+        opponent.health -= damage
+        print(f"{self.name} overclocks and attacks {opponent.name} for {damage} damage! Current health: {self.health}")
 
 # Mage class (inherits from Character)
 class Mage(Character):
     def __init__(self, name):
         super().__init__(name, health=100, attack_power=35)
+        
+    def blood_fireball(self, opponent):
+        damage = round(self.attack_power * random.uniform(0.8, 1.2) * 2)  # Randomize attack damage +- 20%, also, each fireball is 100% more powerful
+        opponent.health -= damage
+        print(f"{self.name} casts Fireball on {opponent.name} for {damage} damage!")
+        self.health -= 30  # Mage loses 30 health for casting a fireball
+        print(f"{self.name} loses 30 health for casting Fireball! Current health: {self.health}")
+        
+    def health_boost(self):
+        boost_amount = round(self.max_health * 0.1 * random.uniform(0.8, 1.2))  # Boost health by 10% of max health, randomized
+        self.max_health += boost_amount
+        self.health += boost_amount
+        print(f"{self.name} receives a health boost of {boost_amount}! New max health: {self.max_health}")
 
 # EvilWizard class (inherits from Character)
 class EvilWizard(Character):
@@ -42,6 +65,8 @@ class EvilWizard(Character):
 
     def regenerate(self):
         self.health += 5
+        if self.health > self.max_health:
+            self.health = self.max_health
         print(f"\n{self.name} regenerates 5 health! Current health: {self.health}")
 
 # Create Archer class
@@ -148,6 +173,20 @@ def battle(player, wizard):
                     player.holy_strike(wizard)
                 elif ability_choice == '2':
                     player.block()
+            
+            elif isinstance(player, Mage):
+                ability_choice = input("Choose ability: \n1. Blood Fireball \n2. Health Boost \n> ")
+                if ability_choice == '1':
+                    player.blood_fireball(wizard)
+                elif ability_choice == '2':
+                    player.health_boost()
+                    
+            elif isinstance(player, Warrior):
+                ability_choice = input("Choose ability: \n1. Berserk \n2. Overclock \n> ")
+                if ability_choice == '1':
+                    player.berserk()
+                elif ability_choice == '2':
+                    player.overclock(wizard)
 
         elif choice == '3':
             player.heal()
@@ -186,4 +225,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
